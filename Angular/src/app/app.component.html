@@ -1,0 +1,13 @@
+<div class="row padding-20-lr">
+    <div class="col-sm-1">
+        <br>
+        <div *ngIf="overlayLoader">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-10 padding-0">
+        <router-outlet></router-outlet>
+    </div>
+</div>

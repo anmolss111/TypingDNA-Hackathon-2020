@@ -14,32 +14,20 @@ class ViewController: NSViewController, WKScriptMessageHandler {
     
     @IBOutlet weak var webV: WKWebView!
     
-    @IBOutlet weak var v2: WKWebView!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("View loaded")
         
         self.label.stringValue = "View Loaded";
         
-        let accessEnabled = AXIsProcessTrustedWithOptions(
-                    [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary)
+//        webV.configuration.userContentController.add(self, name: "jsHandler")
+//        let bundleURL = Bundle.main.resourceURL!.absoluteURL
+//        print(bundleURL)
+//        let html = bundleURL.appendingPathComponent("index.html")
+//        webV.loadFileURL(html, allowingReadAccessTo:bundleURL)
         
-        print(accessEnabled);
-        
-        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) {
-            self.typingdnaKeyDown(with: $0)
-        };
-        
-        webV.configuration.userContentController.add(self, name: "jsHandler")
-        let bundleURL = Bundle.main.resourceURL!.absoluteURL
-        print(bundleURL)
-        let html = bundleURL.appendingPathComponent("try.html")
-        print(html)
-        webV.loadFileURL(html, allowingReadAccessTo:bundleURL)
-        
-        v2.loadHTMLString("<html><body><p>Hello!</p></body></html>", baseURL: nil)
-        
+        let url = URL(string: "http://localhost:4200/")!
+        webV.load(URLRequest(url: url))
+        webV.allowsBackForwardNavigationGestures = true
     }
     
     override var representedObject: Any? {
@@ -48,21 +36,28 @@ class ViewController: NSViewController, WKScriptMessageHandler {
         }
     }
     
-    func typingdnaKeyDown(with event: NSEvent){
-        
-        print(event.keyCode);
-    }
-    
     @IBAction func showJSAlert(_ sender: Any) {
        let js = "hideText();"
        webV.evaluateJavaScript(js, completionHandler: nil)
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print(message)
        if message.name == "jsHandler" {
            print(message.body)
        }
     }
-
+    
+    static func newInsatnce() -> ViewController {
+                
+        let storyboard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
+        let identifier = NSStoryboard.SceneIdentifier("ViewController")
+                
+        guard let viewcontroller = storyboard.instantiateController(withIdentifier: identifier) as? ViewController else {
+            fatalError("Unable to instantiate ViewController in Main.storyboard")
+        }
+        
+        return viewcontroller
+    }
+    
 }
-

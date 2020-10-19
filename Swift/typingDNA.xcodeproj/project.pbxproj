@@ -13,7 +13,7 @@
 		8761A9BB2539DC7100B80911 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8761A9B92539DC7100B80911 /* Main.storyboard */; };
 		8761A9C72539DC7200B80911 /* typingDNATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8761A9C62539DC7200B80911 /* typingDNATests.swift */; };
 		8761A9D22539DC7200B80911 /* typingDNAUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8761A9D12539DC7200B80911 /* typingDNAUITests.swift */; };
-		87EE8C3F253ADC5600865044 /* try.html in Resources */ = {isa = PBXBuildFile; fileRef = 87EE8C3E253ADC5600865044 /* try.html */; };
+		87738FCA253C490A00AD3ADC /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 87738FC9253C490A00AD3ADC /* index.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,7 @@
 		8761A9CD2539DC7200B80911 /* typingDNAUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = typingDNAUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8761A9D12539DC7200B80911 /* typingDNAUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = typingDNAUITests.swift; sourceTree = "<group>"; };
 		8761A9D32539DC7200B80911 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		87EE8C3E253ADC5600865044 /* try.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = try.html; sourceTree = "<group>"; };
+		87738FC9253C490A00AD3ADC /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,7 +102,7 @@
 				8761A9B72539DC7100B80911 /* Assets.xcassets */,
 				8761A9B92539DC7100B80911 /* Main.storyboard */,
 				8761A9BC2539DC7100B80911 /* Info.plist */,
-				87EE8C3E253ADC5600865044 /* try.html */,
+				87738FC9253C490A00AD3ADC /* index.html */,
 			);
 			path = typingDNA;
 			sourceTree = "<group>";
@@ -229,8 +229,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8761A9B82539DC7100B80911 /* Assets.xcassets in Resources */,
+				87738FCA253C490A00AD3ADC /* index.html in Resources */,
 				8761A9BB2539DC7100B80911 /* Main.storyboard in Resources */,
-				87EE8C3F253ADC5600865044 /* try.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <style>
+        .margin-20 {
+
+            margin: 20px;
+        }
+        .padding-20 {
+
+            padding: 20px;
+        }
+    </style>
+
+</head>
+<body>
+    <p id="demo">Hello World.</p>
+    <input type="text" id="typingText" />
+    <input type="button" onclick="showText()" value="Show Text and Trigger Handler">
+    <input type="button" onclick="backspace()" value="Hide Text">
+
+    <div class="row">
+        <div class="col-sm-12 margin-20 padding-20">
+            <form>
+                <br>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 margin-20 padding-20">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse1">Collapsible list group</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse">
+                        <ul class="list-group">
+                            <li class="list-group-item">One</li>
+                            <li class="list-group-item">Two</li>
+                            <li class="list-group-item">Three</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse2">Collapsible list group</a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <ul class="list-group">
+                            <li class="list-group-item">One</li>
+                            <li class="list-group-item">Two</li>
+                            <li class="list-group-item">Three</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://typingdna.com/scripts/typingdna.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script>
+
+        var tdna = new TypingDNA();
+
+        tdna.addTarget("typingText");
+
+        function resetAndStart() {
+
+            document.getElementById("typingText").value = '';
+            tdna.reset();
+        }
+
+        function hideText() {
+
+            document.getElementById("demo").style.display = "none";
+        }
+
+        function showText() {
+
+            var typingText = tdna.getTypingPattern({type:1, text:"git pull origin master", targetId: "typingText"});
+            tdna.reset();
+            window.webkit.messageHandlers.jsHandler.postMessage(typingText);
+        }
+
+        function appendText(char) {
+
+            document.getElementById("typingText").value += char;
+        }
+
+        function backspace(){
+
+            alert('text');
+        }
+
+    </script>
+
+</body>
+</html>

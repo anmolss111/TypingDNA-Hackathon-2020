@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+
+.margin-0 {
+
+    margin: 0px;
+}
+.padding-0 {
+
+    padding: 0px;
+}
+
+.margin-20 {
+
+    margin: 20px;
+}
+.padding-20 {
+
+    padding: 20px;
+}
+
+.padding-20-lr{
+
+    padding: 0px 20px;
+}
