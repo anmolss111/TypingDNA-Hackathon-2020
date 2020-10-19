@@ -1,5 +1,14 @@
 <div class="row padding-20-lr">
-    <div class="col-sm-12 padding-20">
+    <div class="col-sm-6 text-center">
+        <br>
+        <button type="button" class="btn btn-secondary" (click)="clickConfiguration()">Configuration</button>
+    </div>
+    <div class="col-sm-6 text-center">
+        <br>
+        <button type="button" class="btn btn-success" (click)="clickRunCommands()">Run Commands</button>
+    </div>
+    <div class="col-sm-12 padding-20-lr" *ngIf="configuration">
+        <hr>
         <div class="text-right">
             <button type="button" class="btn btn-primary" (click) = "addCommandGroup()">Add Command Group</button>
             &nbsp;&nbsp;
@@ -64,5 +73,8 @@
                 <br>
             </div>
         </div>
+    </div>
+    <div class="col-sm-12 padding-20-lr" *ngIf="runCommands">
+        <hr>
     </div>
 </div>

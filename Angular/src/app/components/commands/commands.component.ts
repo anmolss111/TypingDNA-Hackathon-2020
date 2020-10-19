@@ -17,10 +17,14 @@ export class CommandsComponent implements OnInit {
     commandForm: FormGroup;
     commandsData: any = [];
     tdna: any;
+    configuration = false;
+    runCommands = false;
 
     constructor(private http: HttpClient, private overlayLoaderService: OverlayLoaderService) { }
 
     ngOnInit(): void {
+
+        this.showConfiguration();
 
         let formGroup = {};
 
@@ -144,4 +148,37 @@ export class CommandsComponent implements OnInit {
 		// 	});
     }
 
+    showConfiguration() {
+
+        this.configuration = true;
+    }
+
+    hideConfiguration() {
+
+        this.configuration = false;
+    }
+
+    showRunCommands(){
+
+        this.runCommands = true;
+    }
+
+    hideRunCommands(){
+
+        this.runCommands = false;
+    }
+
+    clickConfiguration(){
+
+        console.log(1);
+        this.hideRunCommands();
+        this.showConfiguration();
+    }
+
+    clickRunCommands(){
+
+        console.log(1);
+        this.showRunCommands();
+        this.hideConfiguration();
+    }
 }
