@@ -4,11 +4,11 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, HttpHeaders } from "@angular/common/http";
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.css']
 })
-export class LoginComponent implements OnInit {
+export class SignupComponent implements OnInit {
 
     form: FormGroup;
 
@@ -36,30 +36,25 @@ export class LoginComponent implements OnInit {
 
         console.log(data)
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/login', data))
-			.subscribe((response) => {
+        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/signup', data))
+            .subscribe((response) => {
 
-				if(response instanceof HttpResponse){
+                if(response instanceof HttpResponse){
 
-					if(response.body['status'] == 'success'){
+                    if(response.body['status'] == 'success'){
 
-						localStorage.setItem('accessToken', response.body['accessToken']);
-						delete response.body['accessToken'];
+                        localStorage.setItem('accessToken', response.body['accessToken']);
+                        delete response.body['accessToken'];
                         console.log(response);
 
                         this.router.navigate(['commands']);
-					}
-				}
-			},
-			(error) => {
+                    }
+                }
+            },
+            (error) => {
 
-				console.log(error)
-			});
-    }
-
-    signup(){
-
-        this.router.navigate(['signup']);
+                console.log(error)
+            });
     }
 
 }

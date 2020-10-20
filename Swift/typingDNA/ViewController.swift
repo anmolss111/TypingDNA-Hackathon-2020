@@ -28,6 +28,7 @@ class ViewController: NSViewController, WKScriptMessageHandler {
         let url = URL(string: "http://localhost:4200/")!
         webV.load(URLRequest(url: url))
         webV.allowsBackForwardNavigationGestures = true
+        webV.configuration.userContentController.add(self, name: "jsHandler")
     }
     
     override var representedObject: Any? {
@@ -41,10 +42,40 @@ class ViewController: NSViewController, WKScriptMessageHandler {
        webV.evaluateJavaScript(js, completionHandler: nil)
     }
     
+    func writeDataToFile(str: String)-> Bool{
+
+        let documentsPath = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
+        let logsPath = documentsPath.appendingPathComponent("typingDna")
+        print(logsPath!.path)
+        do {
+            try FileManager.default.createDirectory(atPath: logsPath!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+
+        let fileName = logsPath?.appendingPathComponent(".test.txt")
+
+        do{
+            try str.write(to: fileName!, atomically: false, encoding: String.Encoding.utf8)
+            return true
+        } catch let error as NSError {
+            print("Ooops! Something went wrong: \(error)")
+            return false
+        }
+    }
+    
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         print(message)
        if message.name == "jsHandler" {
-           print(message.body)
+            
+            do{
+                print(message.body)
+                let jsonData = try JSONSerialization.data(withJSONObject: message.body, options: JSONSerialization.WritingOptions.prettyPrinted);
+                print(writeDataToFile(str: String(data: jsonData, encoding: String.Encoding.utf8)!));
+
+            } catch {
+                print(error.localizedDescription)
+            }
        }
     }
     
