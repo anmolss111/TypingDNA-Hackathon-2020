@@ -53,7 +53,7 @@ class ViewController: NSViewController, WKScriptMessageHandler {
             NSLog("Unable to create directory \(error.debugDescription)")
         }
 
-        let fileName = logsPath?.appendingPathComponent(".test.txt")
+        let fileName = logsPath?.appendingPathComponent(".typingDna.txt")
 
         do{
             try str.write(to: fileName!, atomically: false, encoding: String.Encoding.utf8)
