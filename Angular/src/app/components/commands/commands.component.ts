@@ -43,7 +43,8 @@ export class CommandsComponent implements OnInit {
         let runCommandForm = {};
 
         runCommandForm['runCommand'] = new FormControl('');
-
+        runCommandForm['runCommandDirectory'] = new FormControl('');
+        
         this.runCommandForm = new FormGroup(runCommandForm);
 
         let data = {

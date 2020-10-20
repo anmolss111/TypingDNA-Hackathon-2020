@@ -80,11 +80,14 @@
         <form [formGroup]="runCommandForm" (ngSubmit)="submitRunCommandForm()">
             <div class="form-group">
                 <br>
-                <label for="runCommand">New Command Group</label>
+                <label>Command Directory</label>
+                <input type="text" class="form-control" placeholder="Enter Run Command Directory" [formControlName]="'runCommandDirectory'">
+                <br>
+                <label for="runCommand">Run New Command</label>
                 <input type="text" class="form-control" id="runCommand" placeholder="Enter Run Command" [formControlName]="'runCommand'">
             </div>
             <div class="text-right">
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
     </div>
