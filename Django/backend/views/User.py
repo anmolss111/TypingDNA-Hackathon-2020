@@ -261,16 +261,11 @@ def verifyCommand(request, format=None):
 
     accessToken = requestBody['accessToken']
 
-    userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+    userCommandAccess = UserCommandAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userAccess != None):
+    if(userCommandAccess != None):
 
-        # verifyTypingPattern(getHashedEmail(userAccess.user.email), requestBody['tp'])
-
-        # userCommand = UserCommand()
-        # userCommand.name = requestBody['command']
-        # userCommand.userCommandGroup = userCommandGroupQuery
-        # userCommand.save()
+        userCommandAccess.delete()
 
         return Response({
 

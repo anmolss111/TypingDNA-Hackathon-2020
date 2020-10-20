@@ -13,6 +13,7 @@ urlpatterns = {
 	url(r'^commands/read$', UserView.readCommands),
 	url(r'^command/create$', UserView.createCommand),
 	url(r'^command/run$', UserView.runCommand),
+	url(r'^command/verify$', UserView.verifyCommand),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

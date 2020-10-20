@@ -1,0 +1,12 @@
+[
+  {
+    "id" : 4,
+    "userCommandGroup" : 3,
+    "name" : "git pull origin master"
+  },
+  {
+    "id" : 5,
+    "userCommandGroup" : 3,
+    "name" : "git push origin master"
+  }
+]
