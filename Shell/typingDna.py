@@ -4,7 +4,7 @@ command = sys.argv[1]
 
 basePath = '/Users/anmolsuri/Documents/Develpoment/Hackathons/2020/typingDNA/Shell'
 
-with open(basePath + '/.test.txt') as f:
+with open(basePath + '/.typingDna.txt') as f:
     data = json.load(f)
 
 commands = []

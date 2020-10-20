@@ -690,34 +690,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="617" height="393"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UVy-H7-j5Z">
-                                <rect key="frame" x="188" y="22" width="81" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fmM-VG-G4K">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RYa-uj-wQY">
-                                <rect key="frame" x="186" y="64" width="96" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="dtG-cR-rWa"/>
-                                </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="LL2-97-k4B">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iFv-T9-ZlX">
-                                <rect key="frame" x="281" y="55" width="87" height="16"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="My mac app" id="5ze-ad-CnX">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <wkWebView wantsLayer="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NJT-RC-12X">
-                                <rect key="frame" x="0.0" y="113" width="617" height="280"/>
+                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NJT-RC-12X">
+                                <rect key="frame" x="0.0" y="0.0" width="617" height="393"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
@@ -725,20 +699,13 @@
                             </wkWebView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="RYa-uj-wQY" secondAttribute="bottom" constant="64" id="FBr-nt-ygX"/>
-                            <constraint firstItem="UVy-H7-j5Z" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="194" id="JUn-X9-wvz"/>
                             <constraint firstAttribute="trailing" secondItem="NJT-RC-12X" secondAttribute="trailing" id="L4T-eD-icE"/>
-                            <constraint firstItem="iFv-T9-ZlX" firstAttribute="leading" secondItem="RYa-uj-wQY" secondAttribute="trailing" constant="1" id="Os1-hp-Oi0"/>
-                            <constraint firstItem="RYa-uj-wQY" firstAttribute="top" secondItem="NJT-RC-12X" secondAttribute="bottom" id="WJ4-Kf-vEK"/>
+                            <constraint firstAttribute="bottom" secondItem="NJT-RC-12X" secondAttribute="bottom" id="Uuw-kt-mGA"/>
                             <constraint firstItem="NJT-RC-12X" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="cYU-CM-9JU"/>
-                            <constraint firstItem="RYa-uj-wQY" firstAttribute="bottom" secondItem="iFv-T9-ZlX" secondAttribute="bottom" id="fmf-uI-Ojl"/>
                             <constraint firstItem="NJT-RC-12X" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="o6R-JS-5bk"/>
-                            <constraint firstItem="RYa-uj-wQY" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="186" id="rVT-vJ-csh"/>
-                            <constraint firstItem="UVy-H7-j5Z" firstAttribute="top" secondItem="RYa-uj-wQY" secondAttribute="bottom" constant="14" id="wtC-wx-aTM"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="label" destination="iFv-T9-ZlX" id="um9-a4-qi2"/>
                         <outlet property="webV" destination="NJT-RC-12X" id="n3U-rc-bEP"/>
                     </connections>
                 </viewController>

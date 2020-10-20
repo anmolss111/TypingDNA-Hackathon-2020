@@ -10,14 +10,10 @@ import WebKit
 
 class ViewController: NSViewController, WKScriptMessageHandler {
     
-    @IBOutlet weak var label: NSTextField!
-    
     @IBOutlet weak var webV: WKWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.label.stringValue = "View Loaded";
         
 //        webV.configuration.userContentController.add(self, name: "jsHandler")
 //        let bundleURL = Bundle.main.resourceURL!.absoluteURL
