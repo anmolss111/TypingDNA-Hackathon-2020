@@ -265,11 +265,14 @@ def verifyCommand(request, format=None):
 
     if(userCommandAccess != None):
 
+        runCommand = userCommandAccess.command
+
         userCommandAccess.delete()
 
         return Response({
 
-            'status': 'success'
+            'status': 'success',
+            'runCommand': runCommand
         },status=status.HTTP_200_OK)
 
     else:
@@ -285,6 +288,7 @@ def runCommand(request, format=None):
     requestBody = json.loads(request.body.decode('utf-8'))
 
     accessToken = requestBody['accessToken']
+    command = requestBody['runCommand']
 
     userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
 
@@ -295,6 +299,7 @@ def runCommand(request, format=None):
         userCommandAccess = UserCommandAccess()
         userCommandAccess.accessToken = accessTokenCommand
         userCommandAccess.user = userAccess.user
+        userCommandAccess.command = command
         userCommandAccess.save()
 
         # verifyTypingPattern(getHashedEmail(userAccess.user.email), requestBody['tp'])

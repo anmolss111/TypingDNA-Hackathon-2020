@@ -1,7 +1,7 @@
 #!/bin/bash -i
 while read -e -p '$ ' line
 do
-    pythonMessage=$(python3 /Users/anmolsuri/Documents/Develpoment/Hackathons/2020/typingDNA/Shell/typingDna.py "$line")
+    pythonMessage=$(python3 /Users/anmolsuri/Library/Containers/com.typingDNA/Data/Documents/typingDna/typingDna.py "$line")
     if [ "$pythonMessage" == "" ]
     then
         eval "$line"

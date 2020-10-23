@@ -2,7 +2,7 @@ import json, sys, requests
 
 command = sys.argv[1]
 
-basePath = '/Users/anmolsuri/Documents/Develpoment/Hackathons/2020/typingDNA/Shell'
+basePath = ''
 
 with open(basePath + '/.typingDna.txt') as f:
     data = json.load(f)
@@ -32,10 +32,7 @@ if('typing-dna-auth' in command.lower()):
 
     if(r.status_code == 200):
 
-        returnCommand = ''
-        for i in range(2,len(commandSplit)):
-
-            returnCommand += commandSplit[i] + ' '
+        returnCommand = r.json()['runCommand']
 
         print(returnCommand)
 

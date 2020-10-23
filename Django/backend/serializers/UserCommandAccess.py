@@ -10,5 +10,6 @@ class UserCommandAccessSerializer(serializers.ModelSerializer):
 
 			'id',
 			'accessToken',
-			'user'
+			'user',
+			'command'
 		)

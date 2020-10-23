@@ -44,7 +44,7 @@ export class CommandsComponent implements OnInit {
 
         runCommandForm['runCommand'] = new FormControl('');
         runCommandForm['runCommandDirectory'] = new FormControl('');
-        
+
         this.runCommandForm = new FormGroup(runCommandForm);
 
         let data = {
@@ -227,6 +227,8 @@ export class CommandsComponent implements OnInit {
 
         this.tdna.reset();
 
+        this.overlayLoaderService.show();
+
         this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/run', data))
 			.subscribe((response) => {
 
@@ -234,7 +236,11 @@ export class CommandsComponent implements OnInit {
 
 					if(response.body['status'] == 'success'){
 
+                        (window as any).webkit.messageHandlers.runCommand.postMessage(response.body['accessTokenCommand']);
+                        this.runCommandForm.reset();
+                        this.overlayLoaderService.hide();
                         console.log(response);
+
 
 					}
 				}
@@ -243,6 +249,7 @@ export class CommandsComponent implements OnInit {
                 if(error instanceof HttpErrorResponse){
 
 	                console.log(error)
+                    this.overlayLoaderService.hide();
                 }
 			});
 

@@ -25,6 +25,29 @@ class ViewController: NSViewController, WKScriptMessageHandler {
         webV.load(URLRequest(url: url))
         webV.allowsBackForwardNavigationGestures = true
         webV.configuration.userContentController.add(self, name: "jsHandler")
+        webV.configuration.userContentController.add(self, name: "runCommand")
+        
+        let bundleURL = Bundle.main.resourceURL!.absoluteURL
+        let pythonFile = bundleURL.appendingPathComponent("typingDna.py")
+        let shellScript = bundleURL.appendingPathComponent("typingDna.sh")
+        
+        print(pythonFile)
+        print(shellScript)
+        
+        do {
+            
+            let documentsPath = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
+            let logsPath = documentsPath.appendingPathComponent("typingDna")
+            
+            let pythonFileContent = try String(contentsOf: pythonFile)
+            let pythonFileContentModified = pythonFileContent.replacingOccurrences(of: "basePath = ''", with: "basePath = '" + logsPath!.path + "'")
+                
+            writeDataToFile(str: pythonFileContentModified, fileName: "typingDna.py")
+            
+        } catch {
+            print("Error: " + error.localizedDescription)
+        }
+        
     }
     
     override var representedObject: Any? {
@@ -38,7 +61,7 @@ class ViewController: NSViewController, WKScriptMessageHandler {
        webV.evaluateJavaScript(js, completionHandler: nil)
     }
     
-    func writeDataToFile(str: String)-> Bool{
+    func writeDataToFile(str: String, fileName: String)-> Bool{
 
         let documentsPath = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
         let logsPath = documentsPath.appendingPathComponent("typingDna")
@@ -49,7 +72,7 @@ class ViewController: NSViewController, WKScriptMessageHandler {
             NSLog("Unable to create directory \(error.debugDescription)")
         }
 
-        let fileName = logsPath?.appendingPathComponent(".typingDna.txt")
+        let fileName = logsPath?.appendingPathComponent(fileName)
 
         do{
             try str.write(to: fileName!, atomically: false, encoding: String.Encoding.utf8)
@@ -67,12 +90,19 @@ class ViewController: NSViewController, WKScriptMessageHandler {
             do{
                 print(message.body)
                 let jsonData = try JSONSerialization.data(withJSONObject: message.body, options: JSONSerialization.WritingOptions.prettyPrinted);
-                print(writeDataToFile(str: String(data: jsonData, encoding: String.Encoding.utf8)!));
+                writeDataToFile(str: String(data: jsonData, encoding: String.Encoding.utf8)!, fileName: ".typingDna.txt");
 
             } catch {
                 print(error.localizedDescription)
             }
        }
+        if(message.name == "runCommand"){
+            
+            let pasteboard = NSPasteboard.general
+            pasteboard.declareTypes([.string], owner: nil)
+            let command = "typing-dna-auth " + String(describing: message.body)
+            pasteboard.setString(command, forType: .string)
+        }
     }
     
     static func newInsatnce() -> ViewController {
@@ -85,6 +115,15 @@ class ViewController: NSViewController, WKScriptMessageHandler {
         }
         
         return viewcontroller
+    }
+    
+    func shell(command: String) -> Int32 {
+        let task = Process()
+        task.launchPath = "/usr/bin/osascript"
+        task.arguments = ["-e", command]
+        task.launch()
+        task.waitUntilExit()
+        return task.terminationStatus
     }
     
 }
