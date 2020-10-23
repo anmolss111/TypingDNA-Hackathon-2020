@@ -24,55 +24,57 @@ import hashlib
 
 import urllib.request, base64
 
+minimumTypingDNAScore = 50
+
 def getHashedEmail(email):
 
-    return (hashlib.md5(email.encode()).hexdigest())
+	return (hashlib.md5(email.encode()).hexdigest())
 
 def saveTypingPattern(emailHash, tp):
 
-    base_url = 'https://api.typingdna.com'
-    id = emailHash
-    apiKey = 'ebb7c868b5c35a38274006d521f05812'
-    apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
+	base_url = 'https://api.typingdna.com'
+	id = emailHash
+	apiKey = 'ebb7c868b5c35a38274006d521f05812'
+	apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
 
-    authstring = '%s:%s' % (apiKey, apiSecret)
-    base64string = base64.encodestring(authstring.encode()).decode().replace('\n', '')
-    data = urllib.parse.urlencode({'tp':tp})
-    url = '%s/save/%s' % (base_url, id)
+	authstring = '%s:%s' % (apiKey, apiSecret)
+	base64string = base64.encodestring(authstring.encode()).decode().replace('\n', '')
+	data = urllib.parse.urlencode({'tp':tp})
+	url = '%s/save/%s' % (base_url, id)
 
-    request = urllib.request.Request(url, data.encode('utf-8'), method='POST')
-    request.add_header("Authorization", "Basic %s" % base64string)
-    request.add_header("Content-type", "application/x-www-form-urlencoded")
+	request = urllib.request.Request(url, data.encode('utf-8'), method='POST')
+	request.add_header("Authorization", "Basic %s" % base64string)
+	request.add_header("Content-type", "application/x-www-form-urlencoded")
 
-    res = urllib.request.urlopen(request)
-    res_body = res.read()
-    print(res_body.decode('utf-8'))
+	res = urllib.request.urlopen(request)
+	res_body = res.read()
+	print(res_body.decode('utf-8'))
 
 def verifyTypingPattern(emailHash, tp):
 
-    base_url = 'https://api.typingdna.com'
-    id = emailHash
-    apiKey = 'ebb7c868b5c35a38274006d521f05812'
-    apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
-    quality = '2'
+	base_url = 'https://api.typingdna.com'
+	id = emailHash
+	apiKey = 'ebb7c868b5c35a38274006d521f05812'
+	apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
+	quality = '2'
 
-    authstring = '%s:%s' % (apiKey, apiSecret)
-    base64string = base64.encodestring(authstring.encode()).decode().replace('\n', '')
-    data = urllib.parse.urlencode({'tp':tp, 'quality':quality})
-    url = '%s/verify/%s' % (base_url, id)
+	authstring = '%s:%s' % (apiKey, apiSecret)
+	base64string = base64.encodestring(authstring.encode()).decode().replace('\n', '')
+	data = urllib.parse.urlencode({'tp':tp, 'quality':quality})
+	url = '%s/verify/%s' % (base_url, id)
 
-    request = urllib.request.Request(url, data.encode('utf-8'), method='POST')
-    request.add_header("Authorization", "Basic %s" % base64string)
-    request.add_header("Content-type", "application/x-www-form-urlencoded")
+	request = urllib.request.Request(url, data.encode('utf-8'), method='POST')
+	request.add_header("Authorization", "Basic %s" % base64string)
+	request.add_header("Content-type", "application/x-www-form-urlencoded")
 
-    res = urllib.request.urlopen(request)
-    res_body = res.read()
-    print(res_body.decode('utf-8'))
+	res = urllib.request.urlopen(request)
+	res_body = res.read()
+	return (res_body.decode('utf-8'))
 
 def get_random_string(length):
-    letters = string.ascii_lowercase
-    result_str = ''.join(random.choice(letters) for i in range(length))
-    return (result_str)
+	letters = string.ascii_lowercase
+	result_str = ''.join(random.choice(letters) for i in range(length))
+	return (result_str)
 
 @api_view(['POST'])
 def login(request, format=None):
@@ -88,19 +90,69 @@ def login(request, format=None):
 
 		userAccess = UserAccess.objects.filter(user=user).first()
 
-		accessToken = get_random_string(32)
+		response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
 
-		if(userAccess == None):
+		if(json.loads(response)['score'] > minimumTypingDNAScore):
 
-			userAccess = UserAccess()
-			userAccess.accessToken = accessToken
-			userAccess.user = user
-			userAccess.save()
+			accessToken = get_random_string(32)
+
+			if(userAccess == None):
+
+				userAccess = UserAccess()
+				userAccess.accessToken = accessToken
+				userAccess.user = user
+				userAccess.save()
+
+			else:
+
+				userAccess.accessToken = accessToken
+				userAccess.save()
+
+			return Response({
+
+				'status': 'success',
+				'accessToken': accessToken
+			},status=status.HTTP_200_OK)
 
 		else:
 
-			userAccess.accessToken = accessToken
-			userAccess.save()
+			return Response({
+
+				'status': 'error',
+				'message': "Could'nt verify typing pattern from Typing DNA"
+			},status=status.HTTP_403_FORBIDDEN)
+
+	return Response({
+
+		'status': 'error',
+		'message': "Invalid credentials"
+	},status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['POST'])
+def signup(request, format=None):
+
+	requestBody = json.loads(request.body.decode('utf-8'))
+
+	email = requestBody['email']
+	password = requestBody['password']
+
+	exisitingUser = User.objects.filter(email=email).first()
+
+	if(exisitingUser == None):
+
+		user = User()
+		user.email = email
+		user.password = password
+		user.save()
+
+		accessToken = get_random_string(32)
+
+		userAccess = UserAccess()
+		userAccess.accessToken = accessToken
+		userAccess.user = user
+		userAccess.save()
+
+		saveTypingPattern(getHashedEmail(email), requestBody['tp'])
 
 		return Response({
 
@@ -108,216 +160,189 @@ def login(request, format=None):
 			'accessToken': accessToken
 		},status=status.HTTP_200_OK)
 
-	return Response({
+	else:
 
-        'status': 'error'
-    },status=status.HTTP_403_FORBIDDEN)
+		return Response({
 
-@api_view(['POST'])
-def signup(request, format=None):
-
-    requestBody = json.loads(request.body.decode('utf-8'))
-
-    email = requestBody['email']
-    password = requestBody['password']
-
-    exisitingUser = User.objects.filter(email=email).first()
-
-    if(exisitingUser == None):
-
-        user = User()
-        user.email = email
-        user.password = password
-        user.save()
-
-        accessToken = get_random_string(32)
-
-        userAccess = UserAccess()
-        userAccess.accessToken = accessToken
-        userAccess.user = user
-        userAccess.save()
-
-        return Response({
-
-            'status': 'success',
-            'accessToken': accessToken
-        },status=status.HTTP_200_OK)
-
-    else:
-
-        return Response({
-
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def createCommandGroup(request, format=None):
 
-    requestBody = json.loads(request.body.decode('utf-8'))
+	requestBody = json.loads(request.body.decode('utf-8'))
 
-    accessToken = requestBody['accessToken']
+	accessToken = requestBody['accessToken']
 
-    userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userAccess != None):
+	if(userAccess != None):
 
-        userCommandGroup = UserCommandGroup()
-        userCommandGroup.name = requestBody['commandGroup']
-        userCommandGroup.user = userAccess.user
-        userCommandGroup.save()
+		userCommandGroup = UserCommandGroup()
+		userCommandGroup.name = requestBody['commandGroup']
+		userCommandGroup.user = userAccess.user
+		userCommandGroup.save()
 
-        return Response({
+		return Response({
 
-            'status': 'success'
-        },status=status.HTTP_200_OK)
+			'status': 'success'
+		},status=status.HTTP_200_OK)
 
-    else:
+	else:
 
-        return Response({
+		return Response({
 
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def readCommands(request, format=None):
 
-    requestBody = json.loads(request.body.decode('utf-8'))
+	requestBody = json.loads(request.body.decode('utf-8'))
 
-    accessToken = requestBody['accessToken']
+	accessToken = requestBody['accessToken']
 
-    userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userAccess != None):
+	if(userAccess != None):
 
-        userCommandGroups = UserCommandGroup.objects.filter(user=userAccess.user)
+		userCommandGroups = UserCommandGroup.objects.filter(user=userAccess.user)
 
-        responseData = []
-        if(userCommandGroups.count() != 0):
+		responseData = []
+		if(userCommandGroups.count() != 0):
 
-            userCommandGroupSerializer = UserCommandGroupSerializer(userCommandGroups, many=True)
+			userCommandGroupSerializer = UserCommandGroupSerializer(userCommandGroups, many=True)
 
-            for userCommandGroup in userCommandGroupSerializer.data:
+			for userCommandGroup in userCommandGroupSerializer.data:
 
-                userCommandGroupQuery = UserCommandGroup.objects.filter(id=userCommandGroup['id']).first()
-                userCommand = UserCommand.objects.filter(userCommandGroup=userCommandGroupQuery)
+				userCommandGroupQuery = UserCommandGroup.objects.filter(id=userCommandGroup['id']).first()
+				userCommand = UserCommand.objects.filter(userCommandGroup=userCommandGroupQuery)
 
-                userCommandSerializer = UserCommandSerializer(userCommand, many=True)
+				userCommandSerializer = UserCommandSerializer(userCommand, many=True)
 
-                responseData.append({
+				responseData.append({
 
-                    'groupData': userCommandGroup,
-                    'commands': userCommandSerializer.data
-                })
+					'groupData': userCommandGroup,
+					'commands': userCommandSerializer.data
+				})
 
-        return Response({
+		return Response({
 
-            'status': 'success',
-            'data': responseData
-        },status=status.HTTP_200_OK)
+			'status': 'success',
+			'data': responseData
+		},status=status.HTTP_200_OK)
 
-    else:
+	else:
 
-        return Response({
+		return Response({
 
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def createCommand(request, format=None):
 
-    requestBody = json.loads(request.body.decode('utf-8'))
+	requestBody = json.loads(request.body.decode('utf-8'))
 
-    accessToken = requestBody['accessToken']
+	accessToken = requestBody['accessToken']
 
-    userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userAccess != None):
+	if(userAccess != None):
 
-        userCommandGroupQuery = UserCommandGroup.objects.filter(id=requestBody['commandGroup']).first()
+		userCommandGroupQuery = UserCommandGroup.objects.filter(id=requestBody['commandGroup']).first()
 
-        userCommand = UserCommand()
-        userCommand.name = requestBody['command']
-        userCommand.userCommandGroup = userCommandGroupQuery
-        userCommand.save()
+		userCommand = UserCommand()
+		userCommand.name = requestBody['command']
+		userCommand.userCommandGroup = userCommandGroupQuery
+		userCommand.save()
 
-        saveTypingPattern(getHashedEmail(userAccess.user.email), requestBody['tp'])
+		saveTypingPattern(getHashedEmail(userAccess.user.email), requestBody['tp'])
 
-        return Response({
+		return Response({
 
-            'status': 'success'
-        },status=status.HTTP_200_OK)
+			'status': 'success'
+		},status=status.HTTP_200_OK)
 
-    else:
+	else:
 
-        return Response({
+		return Response({
 
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def verifyCommand(request, format=None):
 
-    requestBody = json.loads(request.body.decode('utf-8'))
+	requestBody = json.loads(request.body.decode('utf-8'))
 
-    accessToken = requestBody['accessToken']
+	accessToken = requestBody['accessToken']
 
-    userCommandAccess = UserCommandAccess.objects.filter(accessToken=accessToken).first()
+	userCommandAccess = UserCommandAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userCommandAccess != None):
+	if(userCommandAccess != None):
 
-        runCommand = userCommandAccess.command
+		runCommand = userCommandAccess.command
 
-        userCommandAccess.delete()
+		userCommandAccess.delete()
 
-        return Response({
+		return Response({
 
-            'status': 'success',
-            'runCommand': runCommand
-        },status=status.HTTP_200_OK)
+			'status': 'success',
+			'runCommand': runCommand
+		},status=status.HTTP_200_OK)
 
-    else:
+	else:
 
-        return Response({
+		return Response({
 
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
 def runCommand(request, format=None):
 
-    requestBody = json.loads(request.body.decode('utf-8'))
+	requestBody = json.loads(request.body.decode('utf-8'))
 
-    accessToken = requestBody['accessToken']
-    command = requestBody['runCommand']
+	accessToken = requestBody['accessToken']
+	command = requestBody['runCommand']
 
-    userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
 
-    if(userAccess != None):
+	if(userAccess != None):
 
-        accessTokenCommand = get_random_string(32)
+		response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
 
-        userCommandAccess = UserCommandAccess()
-        userCommandAccess.accessToken = accessTokenCommand
-        userCommandAccess.user = userAccess.user
-        userCommandAccess.command = command
-        userCommandAccess.save()
+		if(json.loads(response)['score'] > minimumTypingDNAScore):
 
-        # verifyTypingPattern(getHashedEmail(userAccess.user.email), requestBody['tp'])
+			accessTokenCommand = get_random_string(32)
 
-        # userCommand = UserCommand()
-        # userCommand.name = requestBody['command']
-        # userCommand.userCommandGroup = userCommandGroupQuery
-        # userCommand.save()
+			userCommandAccess = UserCommandAccess()
+			userCommandAccess.accessToken = accessTokenCommand
+			userCommandAccess.user = userAccess.user
+			userCommandAccess.command = command
+			userCommandAccess.save()
 
-        return Response({
+			return Response({
 
-            'status': 'success',
-            'accessTokenCommand': accessTokenCommand
-        },status=status.HTTP_200_OK)
+				'status': 'success',
+				'accessTokenCommand': accessTokenCommand
+			},status=status.HTTP_200_OK)
 
-    else:
+		else:
 
-        return Response({
+			response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
 
-    		'status': 'error'
-    	},status=status.HTTP_403_FORBIDDEN)
+			return Response({
+
+				'status': 'error',
+				'message': "Could'nt verify typing pattern from Typing DNA"
+			},status=status.HTTP_403_FORBIDDEN)
+
+	else:
+
+		return Response({
+
+			'status': 'error',
+			'message': "Access Token could'nt be verified"
+		},status=status.HTTP_403_FORBIDDEN)

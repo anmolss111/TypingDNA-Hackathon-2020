@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, HttpHeaders } from "@angular/common/http";
 declare var TypingDNA: any;
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { OverlayLoaderService } from './../../services/loaders/overlay-loader.service';
 
 @Component({
@@ -11,248 +12,271 @@ import { OverlayLoaderService } from './../../services/loaders/overlay-loader.se
 })
 export class CommandsComponent implements OnInit {
 
-    showCommandGroupForm = false;
-    showCommandForm = false;
-    commandGroupForm: FormGroup;
-    commandForm: FormGroup;
-    runCommandForm: FormGroup;
-    commandsData: any = [];
-    tdna: any;
-    configuration = false;
-    runCommands = false;
+	showCommandGroupForm = false;
+	showCommandForm = false;
+	commandGroupForm: FormGroup;
+	commandForm: FormGroup;
+	runCommandForm: FormGroup;
+	commandsData: any = [];
+	tdna: any;
+	configuration = false;
+	runCommands = false;
 
-    constructor(private http: HttpClient, private overlayLoaderService: OverlayLoaderService) { }
+	constructor(private http: HttpClient, private overlayLoaderService: OverlayLoaderService, public dialog: MatDialog) { }
 
-    ngOnInit(): void {
+	ngOnInit(): void {
 
-        this.showConfiguration();
+		this.showConfiguration();
 
-        let formGroup = {};
+		let formGroup = {};
 
-        formGroup['commandGroup'] = new FormControl('');
+		formGroup['commandGroup'] = new FormControl('');
 
-        this.commandGroupForm = new FormGroup(formGroup);
+		this.commandGroupForm = new FormGroup(formGroup);
 
-        let form = {};
+		let form = {};
 
-        form['commandGroup'] = new FormControl('');
-        form['command'] = new FormControl('');
+		form['commandGroup'] = new FormControl('');
+		form['command'] = new FormControl('');
 
-        this.commandForm = new FormGroup(form);
+		this.commandForm = new FormGroup(form);
 
-        let runCommandForm = {};
+		let runCommandForm = {};
 
-        runCommandForm['runCommand'] = new FormControl('');
-        runCommandForm['runCommandDirectory'] = new FormControl('');
+		runCommandForm['runCommand'] = new FormControl('');
+		runCommandForm['runCommandDirectory'] = new FormControl('');
 
-        this.runCommandForm = new FormGroup(runCommandForm);
+		this.runCommandForm = new FormGroup(runCommandForm);
 
-        let data = {
+		let data = {
 
-            'accessToken': localStorage.getItem('accessToken')
-        }
+			'accessToken': localStorage.getItem('accessToken')
+		}
 
-        setTimeout(() => {
+		setTimeout(() => {
 
-            this.overlayLoaderService.show();
+			this.overlayLoaderService.show();
 
-            this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/commands/read', data))
-    			.subscribe((response) => {
+			this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/commands/read', data))
+				.subscribe((response) => {
 
-    				if(response instanceof HttpResponse){
+					if(response instanceof HttpResponse){
 
-                        this.commandsData = response.body['data'];
-                        let commands = []
-                        response.body['data'].forEach((data) => {
+						this.commandsData = response.body['data'];
+						let commands = []
+						response.body['data'].forEach((data) => {
 
-                            data.commands.forEach((command) => {
+							data.commands.forEach((command) => {
 
-                                commands.push(command);
-                            });
-                        })
-                        this.overlayLoaderService.hide();
-                        (window as any).webkit.messageHandlers.jsHandler.postMessage(commands);
-                    }
-                },
-                (error) => {
+								commands.push(command);
+							});
+						})
+						this.overlayLoaderService.hide();
+						(window as any).webkit.messageHandlers.jsHandler.postMessage(commands);
+					}
+				},
+				(error) => {
 
-                    if(error instanceof HttpErrorResponse){
+					if(error instanceof HttpErrorResponse){
 
-                        console.log(error)
-                        this.overlayLoaderService.hide();
-                    }
-                });
-        }, 10);
-    }
+						console.log(error)
+						this.overlayLoaderService.hide();
+					}
+				});
+		}, 10);
+	}
 
-    addCommandGroup(){
+	addCommandGroup(){
 
-        this.showCommandGroupForm = true;
-    }
+		this.showCommandGroupForm = true;
+	}
 
-    addCommand(){
+	addCommand(){
 
-        this.tdna = new TypingDNA();
-        this.tdna.addTarget("command");
-        this.showCommandForm = true;
-    }
+		this.tdna = new TypingDNA();
+		this.tdna.addTarget("command");
+		this.showCommandForm = true;
+	}
 
-    cancelCommandGroup(){
+	cancelCommandGroup(){
 
-        this.showCommandGroupForm = false;
-    }
+		this.showCommandGroupForm = false;
+	}
 
-    cancelCommand(){
+	cancelCommand(){
 
-        this.showCommandForm = false;
-    }
+		this.showCommandForm = false;
+	}
 
-    submitCommandGroupForm(){
+	submitCommandGroupForm(){
 
-        let data = {
+		let data = {
 
-            'commandGroup': this.commandGroupForm.value.commandGroup,
-            'accessToken': localStorage.getItem('accessToken')
-        }
+			'commandGroup': this.commandGroupForm.value.commandGroup,
+			'accessToken': localStorage.getItem('accessToken')
+		}
 
-        this.overlayLoaderService.show();
+		this.overlayLoaderService.show();
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/group/create', data))
+		this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/group/create', data))
 			.subscribe((response) => {
 
 				if(response instanceof HttpResponse){
 
 					if(response.body['status'] == 'success'){
 
-                        console.log(response);
-                        this.overlayLoaderService.hide();
-                        window.location.reload();
+						console.log(response);
+						this.overlayLoaderService.hide();
+						window.location.reload();
 					}
 				}
 			},
 			(error) => {
 
-                if(error instanceof HttpErrorResponse){
+				if(error instanceof HttpErrorResponse){
 
-	                console.log(error)
-                    this.overlayLoaderService.hide();
-                }
+					console.log(error)
+					this.overlayLoaderService.hide();
+				}
 			});
-    }
+	}
 
-    submitCommandForm(){
+	submitCommandForm(){
 
-        let tp = this.tdna.getTypingPattern({targetId: "command"});
+		let tp = this.tdna.getTypingPattern({targetId: "command"});
 
-        let data = {
+		let data = {
 
-            'commandGroup': this.commandForm.value.commandGroup,
-            'command': this.commandForm.value.command,
-            'accessToken': localStorage.getItem('accessToken'),
-            'tp': tp
-        }
+			'commandGroup': this.commandForm.value.commandGroup,
+			'command': this.commandForm.value.command,
+			'accessToken': localStorage.getItem('accessToken'),
+			'tp': tp
+		}
 
-        this.tdna.reset();
+		this.tdna.reset();
 
-        this.overlayLoaderService.show();
+		this.overlayLoaderService.show();
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/create', data))
+		this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/create', data))
 			.subscribe((response) => {
 
 				if(response instanceof HttpResponse){
 
 					if(response.body['status'] == 'success'){
 
-                        console.log(response);
-                        this.overlayLoaderService.hide();
-                        window.location.reload();
+						console.log(response);
+						this.overlayLoaderService.hide();
+						window.location.reload();
 					}
 				}
 			},
 			(error) => {
-                if(error instanceof HttpErrorResponse){
+				if(error instanceof HttpErrorResponse){
 
-	                console.log(error)
-                    this.overlayLoaderService.hide();
-                }
+					console.log(error)
+					this.overlayLoaderService.hide();
+				}
 			});
-    }
+	}
 
-    showConfiguration() {
+	showConfiguration() {
 
-        this.configuration = true;
-    }
+		this.configuration = true;
+	}
 
-    hideConfiguration() {
+	hideConfiguration() {
 
-        this.configuration = false;
-    }
+		this.configuration = false;
+	}
 
-    showRunCommands(){
+	showRunCommands(){
 
-        this.tdna = new TypingDNA();
-        this.tdna.addTarget("runCommand");
-        this.runCommands = true;
-    }
+		this.tdna = new TypingDNA();
+		this.tdna.addTarget("runCommand");
+		this.runCommands = true;
+	}
 
-    hideRunCommands(){
+	hideRunCommands(){
 
-        this.runCommands = false;
-    }
+		this.runCommands = false;
+	}
 
-    clickConfiguration(){
+	clickConfiguration(){
 
-        this.hideRunCommands();
-        this.showConfiguration();
-    }
+		this.hideRunCommands();
+		this.showConfiguration();
+	}
 
-    clickRunCommands(){
+	clickRunCommands(){
 
-        this.showRunCommands();
-        this.hideConfiguration();
-    }
+		this.showRunCommands();
+		this.hideConfiguration();
+	}
 
-    submitRunCommandForm(){
+	submitRunCommandForm(){
 
-        let tp = this.tdna.getTypingPattern({targetId: "runCommand"});
+		let tp = this.tdna.getTypingPattern({targetId: "runCommand"});
 
-        let data = {
+		let data = {
 
-            'runCommand': this.runCommandForm.value.runCommand,
-            'accessToken': localStorage.getItem('accessToken'),
-            'tp': tp
-        }
+			'runCommand': this.runCommandForm.value.runCommand,
+			'accessToken': localStorage.getItem('accessToken'),
+			'tp': tp
+		}
 
-        console.log(data);
+		console.log(data);
 
-        this.tdna.reset();
+		this.tdna.reset();
 
-        this.overlayLoaderService.show();
+		this.overlayLoaderService.show();
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/run', data))
+		this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/run', data))
 			.subscribe((response) => {
 
 				if(response instanceof HttpResponse){
 
 					if(response.body['status'] == 'success'){
 
-                        (window as any).webkit.messageHandlers.runCommand.postMessage(response.body['accessTokenCommand']);
-                        this.runCommandForm.reset();
-                        this.overlayLoaderService.hide();
-                        console.log(response);
-
-
+						(window as any).webkit.messageHandlers.runCommand.postMessage(response.body['accessTokenCommand']);
+						this.runCommandForm.reset();
+						this.tdna.reset();
+						this.overlayLoaderService.hide();
+						console.log(response);
 					}
 				}
 			},
 			(error) => {
-                if(error instanceof HttpErrorResponse){
+				if(error instanceof HttpErrorResponse){
 
-	                console.log(error)
-                    this.overlayLoaderService.hide();
-                }
+					console.log(error)
+					this.runCommandForm.reset();
+					this.overlayLoaderService.hide();
+					this.openDialog(error.error['message']);
+				}
 			});
+	}
 
+	openDialog(message): void {
+		const dialogRef = this.dialog.open(AlertBox, {
+			width: '250px',
+			data: { message: message }
+		});
 
-    }
+		dialogRef.afterClosed().subscribe(result => {
+			console.log('The dialog was closed');
+		});
+	}
+}
+
+@Component({
+	selector: 'alert-box-command',
+	templateUrl: './alert-box.html',
+})
+export class AlertBox {
+
+	constructor(public dialogRef: MatDialogRef<AlertBox>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+
+	onNoClick(): void {
+		this.dialogRef.close();
+	}
 }

@@ -1,42 +1,52 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, HttpHeaders } from "@angular/common/http";
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { OverlayLoaderService } from './../../services/loaders/overlay-loader.service';
+declare var TypingDNA: any;
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+	selector: 'app-login',
+	templateUrl: './login.component.html',
+	styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
 
-    form: FormGroup;
+	form: FormGroup;
+	tdna: any;
 
-    constructor(private router: Router, private http: HttpClient) { }
+	constructor(private router: Router, private http: HttpClient, public dialog: MatDialog, private overlayLoaderService: OverlayLoaderService) { }
 
-    ngOnInit(): void {
+	ngOnInit(): void {
 
-        let formGroup = {};
+		let formGroup = {};
 
-        formGroup['email'] = new FormControl('');
-        formGroup['password'] = new FormControl('');
+		formGroup['email'] = new FormControl('');
+		formGroup['password'] = new FormControl('');
 
-        this.form = new FormGroup(formGroup);
-    }
+		this.tdna = new TypingDNA();
+		this.tdna.addTarget("password");
 
-    submit() {
+		this.form = new FormGroup(formGroup);
+	}
 
-        console.log(this.form)
+	submit() {
 
-        let data = {
+		let tp = this.tdna.getTypingPattern({targetId: "password"});
 
-            'email': this.form.value.email,
-            'password': this.form.value.password
-        }
+		let data = {
 
-        console.log(data)
+			'email': this.form.value.email,
+			'password': this.form.value.password,
+			'tp': tp
+		}
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/login', data))
+		console.log(data)
+
+		this.overlayLoaderService.show();
+
+		this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/login', data))
 			.subscribe((response) => {
 
 				if(response instanceof HttpResponse){
@@ -45,21 +55,48 @@ export class LoginComponent implements OnInit {
 
 						localStorage.setItem('accessToken', response.body['accessToken']);
 						delete response.body['accessToken'];
-                        console.log(response);
-
-                        this.router.navigate(['commands']);
+						this.overlayLoaderService.hide();
+						this.router.navigate(['commands']);
 					}
 				}
 			},
 			(error) => {
 
-				console.log(error)
+				if(error instanceof HttpErrorResponse){
+
+					this.overlayLoaderService.hide();
+					this.openDialog(error.error['message']);
+
+				}
 			});
-    }
+	}
 
-    signup(){
+	openDialog(message): void {
+		const dialogRef = this.dialog.open(AlertBox, {
+			width: '250px',
+			data: { message: message }
+		});
 
-        this.router.navigate(['signup']);
-    }
+		dialogRef.afterClosed().subscribe(result => {
+			console.log('The dialog was closed');
+		});
+	}
 
+	signup(){
+
+		this.router.navigate(['signup']);
+	}
+}
+
+@Component({
+	selector: 'alert-box',
+	templateUrl: './alert-box.html',
+})
+export class AlertBox {
+
+	constructor(public dialogRef: MatDialogRef<AlertBox>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+
+	onNoClick(): void {
+		this.dialogRef.close();
+	}
 }

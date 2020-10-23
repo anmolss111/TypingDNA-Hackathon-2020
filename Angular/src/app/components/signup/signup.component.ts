@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, HttpHeaders } from "@angular/common/http";
+declare var TypingDNA: any;
+import { OverlayLoaderService } from './../../services/loaders/overlay-loader.service';
 
 @Component({
   selector: 'app-signup',
@@ -10,51 +12,61 @@ import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, H
 })
 export class SignupComponent implements OnInit {
 
-    form: FormGroup;
+	form: FormGroup;
+	tdna: any;
 
-    constructor(private router: Router, private http: HttpClient) { }
+	constructor(private router: Router, private http: HttpClient, private overlayLoaderService: OverlayLoaderService) { }
 
-    ngOnInit(): void {
+	ngOnInit(): void {
 
-        let formGroup = {};
+		let formGroup = {};
 
-        formGroup['email'] = new FormControl('');
-        formGroup['password'] = new FormControl('');
+		formGroup['email'] = new FormControl('');
+		formGroup['password'] = new FormControl('');
 
-        this.form = new FormGroup(formGroup);
-    }
+		this.tdna = new TypingDNA();
+		this.tdna.addTarget("password");
 
-    submit() {
+		this.form = new FormGroup(formGroup);
+	}
 
-        console.log(this.form)
+	submit() {
 
-        let data = {
+		let tp = this.tdna.getTypingPattern({targetId: "password"});
 
-            'email': this.form.value.email,
-            'password': this.form.value.password
-        }
+		let data = {
 
-        console.log(data)
+			'email': this.form.value.email,
+			'password': this.form.value.password,
+			'tp': tp
+		}
 
-        this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/signup', data))
-            .subscribe((response) => {
+		this.overlayLoaderService.show();
 
-                if(response instanceof HttpResponse){
+		this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/auth/signup', data))
+			.subscribe((response) => {
 
-                    if(response.body['status'] == 'success'){
+				if(response instanceof HttpResponse){
 
-                        localStorage.setItem('accessToken', response.body['accessToken']);
-                        delete response.body['accessToken'];
-                        console.log(response);
+					if(response.body['status'] == 'success'){
 
-                        this.router.navigate(['commands']);
-                    }
-                }
-            },
-            (error) => {
+						localStorage.setItem('accessToken', response.body['accessToken']);
+						delete response.body['accessToken'];
+						this.overlayLoaderService.hide();
+						this.router.navigate(['commands']);
+					}
+				}
+			},
+			(error) => {
 
-                console.log(error)
-            });
-    }
+				console.log(error)
+				this.overlayLoaderService.hide();
+			});
+	}
+
+	login(){
+
+		this.router.navigate(['login']);
+	}
 
 }

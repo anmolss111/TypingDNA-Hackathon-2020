@@ -1,25 +1,26 @@
 <div class="row padding-20-lr">
-    <div class="col-sm-12 padding-0">
-        <form [formGroup]="form" (ngSubmit)="submit()">
-            <br>
-            <br>
-            <br>
-            <div class="form-group">
-                <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Password" [formControlName]="'password'">
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-sm-12 text-center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    &nbsp;&nbsp;
-                    <button type="button" class="btn btn-link" (click) = "signup()">Signup</button>
-                </div>
-            </div>
-        </form>
-    </div>
+	<div class="col-sm-12 padding-0">
+		<form [formGroup]="form" (ngSubmit)="submit()">
+			<br>
+			<br>
+			<br>
+			<div class="form-group">
+				<label for="email">Email address</label>
+				<input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'" required="true">
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" id="password" placeholder="Password" [formControlName]="'password'" required="true">
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-sm-12 text-center">
+					<button type="submit" class="btn btn-primary">Login</button>
+					<br>
+					<br>
+					<button type="button" class="btn btn-link" (click) = "signup()">Don't have an account ? Signup</button>
+				</div>
+			</div>
+		</form>
+	</div>
 </div>
