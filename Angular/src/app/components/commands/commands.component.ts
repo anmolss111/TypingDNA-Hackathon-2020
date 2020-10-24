@@ -4,6 +4,8 @@ import { HttpClient, HttpErrorResponse, HttpParams, HttpRequest, HttpResponse, H
 declare var TypingDNA: any;
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { OverlayLoaderService } from './../../services/loaders/overlay-loader.service';
+import { AlertBoxPasswordComponent } from './../alert-box-password/alert-box-password.component';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-commands',
@@ -17,12 +19,13 @@ export class CommandsComponent implements OnInit {
 	commandGroupForm: FormGroup;
 	commandForm: FormGroup;
 	runCommandForm: FormGroup;
+	logoutForm: FormGroup;
 	commandsData: any = [];
 	tdna: any;
 	configuration = false;
 	runCommands = false;
 
-	constructor(private http: HttpClient, private overlayLoaderService: OverlayLoaderService, public dialog: MatDialog) { }
+	constructor(private http: HttpClient, private overlayLoaderService: OverlayLoaderService, public dialog: MatDialog, private router: Router) { }
 
 	ngOnInit(): void {
 
@@ -264,6 +267,76 @@ export class CommandsComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe(result => {
 			console.log('The dialog was closed');
+		});
+	}
+
+	logout(): void {
+
+		const dialogRef = this.dialog.open(AlertBoxPasswordComponent, {
+			width: '300px',
+			disableClose: true
+		});
+
+		dialogRef.afterClosed().subscribe(result => {
+			console.log(result)
+
+			if(result.status == 'success'){
+
+				localStorage.removeItem('accessToken')
+				this.router.navigate(['login']);
+			}
+			else if(result!= undefined && result.status == 'error'){
+
+				this.openDialog(result.message);
+			}
+		});
+	}
+
+	deleteCommand(id){
+
+		const dialogRef = this.dialog.open(AlertBoxPasswordComponent, {
+			width: '300px',
+			disableClose: true
+		});
+
+		dialogRef.afterClosed().subscribe(result => {
+			console.log(result)
+
+			if(result!= undefined && result.status == 'success'){
+
+				let data = {
+
+					'id': id,
+					'accessToken': localStorage.getItem('accessToken')
+				}
+
+				this.overlayLoaderService.show();
+
+				this.http.request(new HttpRequest('POST', 'http://localhost:8000/backend/command/delete', data))
+					.subscribe((response) => {
+
+						if(response instanceof HttpResponse){
+
+							if(response.body['status'] == 'success'){
+
+								this.overlayLoaderService.hide();
+								window.location.reload();
+							}
+						}
+					},
+					(error) => {
+						if(error instanceof HttpErrorResponse){
+
+							this.overlayLoaderService.hide();
+							this.openDialog(error.error['message']);
+						}
+					});
+
+			}
+			else if(result!= undefined && result.status == 'error'){
+
+				this.openDialog(result.message);
+			}
 		});
 	}
 }

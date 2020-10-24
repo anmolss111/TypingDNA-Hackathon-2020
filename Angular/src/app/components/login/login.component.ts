@@ -29,6 +29,8 @@ export class LoginComponent implements OnInit {
 		this.tdna.addTarget("password");
 
 		this.form = new FormGroup(formGroup);
+
+		(window as any).webkit.messageHandlers.jsHandler.postMessage([]);
 	}
 
 	submit() {

@@ -90,37 +90,37 @@ def login(request, format=None):
 
 		userAccess = UserAccess.objects.filter(user=user).first()
 
-		response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
+		# response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
 
-		if(json.loads(response)['score'] > minimumTypingDNAScore):
+		# if(json.loads(response)['score'] > minimumTypingDNAScore):
 
-			accessToken = get_random_string(32)
+		accessToken = get_random_string(32)
 
-			if(userAccess == None):
+		if(userAccess == None):
 
-				userAccess = UserAccess()
-				userAccess.accessToken = accessToken
-				userAccess.user = user
-				userAccess.save()
-
-			else:
-
-				userAccess.accessToken = accessToken
-				userAccess.save()
-
-			return Response({
-
-				'status': 'success',
-				'accessToken': accessToken
-			},status=status.HTTP_200_OK)
+			userAccess = UserAccess()
+			userAccess.accessToken = accessToken
+			userAccess.user = user
+			userAccess.save()
 
 		else:
 
-			return Response({
+			userAccess.accessToken = accessToken
+			userAccess.save()
 
-				'status': 'error',
-				'message': "Could'nt verify typing pattern from Typing DNA"
-			},status=status.HTTP_403_FORBIDDEN)
+		return Response({
+
+			'status': 'success',
+			'accessToken': accessToken
+		},status=status.HTTP_200_OK)
+
+		# else:
+		#
+		# 	return Response({
+		#
+		# 		'status': 'error',
+		# 		'message': "Could'nt verify typing pattern from Typing DNA"
+		# 	},status=status.HTTP_403_FORBIDDEN)
 
 	return Response({
 
@@ -165,6 +165,55 @@ def signup(request, format=None):
 		return Response({
 
 			'status': 'error'
+		},status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['POST'])
+def verify(request, format=None):
+
+	requestBody = json.loads(request.body.decode('utf-8'))
+
+	accessToken = requestBody['accessToken']
+	password = requestBody['password']
+
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+
+	if(userAccess != None):
+
+		if(userAccess.user.password == password):
+
+			return Response({
+
+				'status': 'success'
+			},status=status.HTTP_200_OK)
+
+		else:
+
+			return Response({
+
+				'status': 'error',
+				'message': "Invalid credentials"
+			},status=status.HTTP_403_FORBIDDEN)
+
+		# response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
+
+		# if(json.loads(response)['score'] > minimumTypingDNAScore):
+
+
+
+		# else:
+		#
+		# 	return Response({
+		#
+		# 		'status': 'error',
+		# 		'message': "Could'nt verify typing pattern from Typing DNA"
+		# 	},status=status.HTTP_403_FORBIDDEN)
+
+	else:
+
+		return Response({
+
+			'status': 'error',
+			'message': "Access Token could'nt be verified"
 		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
@@ -300,6 +349,32 @@ def verifyCommand(request, format=None):
 		},status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['POST'])
+def deleteCommand(request, format=None):
+
+	requestBody = json.loads(request.body.decode('utf-8'))
+
+	accessToken = requestBody['accessToken']
+
+	userAccess = UserAccess.objects.filter(accessToken=accessToken).first()
+
+	if(userAccess != None):
+
+		UserCommand.objects.filter(id=requestBody['id']).delete()
+
+		return Response({
+
+			'status': 'success'
+		},status=status.HTTP_200_OK)
+
+	else:
+
+		return Response({
+
+			'status': 'error',
+			'message': "Access Token could'nt be verified"
+		},status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['POST'])
 def runCommand(request, format=None):
 
 	requestBody = json.loads(request.body.decode('utf-8'))
@@ -311,33 +386,31 @@ def runCommand(request, format=None):
 
 	if(userAccess != None):
 
-		response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
+		# response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
 
-		if(json.loads(response)['score'] > minimumTypingDNAScore):
+		# if(json.loads(response)['score'] > minimumTypingDNAScore):
 
-			accessTokenCommand = get_random_string(32)
+		accessTokenCommand = get_random_string(32)
 
-			userCommandAccess = UserCommandAccess()
-			userCommandAccess.accessToken = accessTokenCommand
-			userCommandAccess.user = userAccess.user
-			userCommandAccess.command = command
-			userCommandAccess.save()
+		userCommandAccess = UserCommandAccess()
+		userCommandAccess.accessToken = accessTokenCommand
+		userCommandAccess.user = userAccess.user
+		userCommandAccess.command = command
+		userCommandAccess.save()
 
-			return Response({
+		return Response({
 
-				'status': 'success',
-				'accessTokenCommand': accessTokenCommand
-			},status=status.HTTP_200_OK)
+			'status': 'success',
+			'accessTokenCommand': accessTokenCommand
+		},status=status.HTTP_200_OK)
 
-		else:
-
-			response = verifyTypingPattern(getHashedEmail(email), requestBody['tp'])
-
-			return Response({
-
-				'status': 'error',
-				'message': "Could'nt verify typing pattern from Typing DNA"
-			},status=status.HTTP_403_FORBIDDEN)
+		# else:
+		#
+		# 	return Response({
+		#
+		# 		'status': 'error',
+		# 		'message': "Could'nt verify typing pattern from Typing DNA"
+		# 	},status=status.HTTP_403_FORBIDDEN)
 
 	else:
 
