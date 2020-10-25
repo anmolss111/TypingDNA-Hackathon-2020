@@ -244,6 +244,7 @@ export class CommandsComponent implements OnInit {
 						this.runCommandForm.reset();
 						this.tdna.reset();
 						this.overlayLoaderService.hide();
+						this.openDialog('Command copied to your clipboard. Please run your command in the terminal.');
 						console.log(response);
 					}
 				}
