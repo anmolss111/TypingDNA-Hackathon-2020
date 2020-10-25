@@ -23,4 +23,33 @@ Interacting with typing DNA. Swift application development. A little bit of bash
 ## What's next for Typing DNA Command Line Authenticator
 With some small changes in the code this can be deployed on the server and as a proper application for Mac Users. The same shell scripts and the backend can be reutilised for authenticating command requests on a server.
 
+## Demo
 https://www.youtube.com/watch?v=J__W6lRfKM0
+
+## Setup
+
+Install python3, npm, ng cli, PostgreSQL, Dango, Django CORS, Django Rest framework
+Clone the Repo
+
+PostgreSQL Setup:
+Create a database named "typingdna" with "root" user and password for the user as "root" else change this in the setting files for Django application
+
+Django Setup:
+python3 manage.py makemigrations backend
+python3 manage.py migrate
+python3 manage.py runserver
+
+Angular Setup:
+npm install
+ng serve
+
+Swift:
+Build the application
+
+Shell: 
+Change the path to your localpath
+Add it as the starting run command parameter in the terminal properties.
+
+
+
+
