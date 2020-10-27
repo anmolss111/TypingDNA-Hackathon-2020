@@ -35,13 +35,13 @@ PostgreSQL Setup:
 Create a database named "typingdna" with "root" user and password for the user as "root" else change this in the setting files for Django application
 
 Django Setup:
-python3 manage.py makemigrations backend
-python3 manage.py migrate
-python3 manage.py runserver
+-> python3 manage.py makemigrations backend
+-> python3 manage.py migrate
+-> python3 manage.py runserver
 
 Angular Setup:
-npm install
-ng serve
+-> npm install
+-> ng serve
 
 Swift:
 Build the application
