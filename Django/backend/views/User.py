@@ -34,8 +34,8 @@ def saveTypingPattern(emailHash, tp):
 
 	base_url = 'https://api.typingdna.com'
 	id = emailHash
-	apiKey = 'ebb7c868b5c35a38274006d521f05812'
-	apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
+	apiKey = 'key'
+	apiSecret = 'secret'
 
 	authstring = '%s:%s' % (apiKey, apiSecret)
 	base64string = base64.encodestring(authstring.encode()).decode().replace('\n', '')
@@ -54,8 +54,8 @@ def verifyTypingPattern(emailHash, tp):
 
 	base_url = 'https://api.typingdna.com'
 	id = emailHash
-	apiKey = 'ebb7c868b5c35a38274006d521f05812'
-	apiSecret = '9b65a24e2ab081f70e52e3cdca677fc4'
+	apiKey = 'key'
+	apiSecret = 'secret'
 	quality = '2'
 
 	authstring = '%s:%s' % (apiKey, apiSecret)
