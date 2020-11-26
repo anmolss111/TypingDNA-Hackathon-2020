@@ -3,7 +3,7 @@
 Typing DNA Command Line Authenticator
 
 ## Demo
-https://www.youtube.com/watch?v=J__W6lRfKM0
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/J__W6lRfKM0/0.jpg)](http://www.youtube.com/watch?v=J__W6lRfKM0 "Video Title")
 
 ## Setup
 
